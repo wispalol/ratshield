@@ -1,0 +1,153 @@
+// RatShield core rules: technique-level indicators that are strong on their own or in pairs.
+// Every rule needs a meta severity; points are derived from it by the risk engine.
+
+rule Suspicious_PowerShell_Encoded_Command : powershell
+{
+    meta:
+        description = "PowerShell invoked with an encoded or hidden command line"
+        severity = "high"
+        family = "PowerShell Abuse"
+        id = "core.ps.encoded"
+    strings:
+        $enc1 = "-EncodedCommand" nocase
+        $enc2 = "-enc " nocase
+        $enc3 = "-e " nocase
+        $host1 = "powershell" nocase
+        $host2 = "pwsh" nocase
+        $hide1 = "-nop" nocase
+        $hide2 = "-w hidden" nocase
+        $hide3 = "-windowstyle hidden" nocase
+        $hide4 = "-exec bypass" nocase
+        $hide5 = "-executionpolicy bypass" nocase
+    condition:
+        (any of ($enc*)) and (any of ($host*)) and (any of ($hide*))
+}
+
+rule Suspicious_WebClient_Download_Cradle : download
+{
+    meta:
+        description = "In-memory download and execution cradle"
+        severity = "high"
+        family = "Downloader"
+        id = "core.download.cradle"
+    strings:
+        $net = "System.Net.WebClient" nocase
+        $dl1 = "DownloadString" nocase
+        $dl2 = "DownloadFile" nocase
+        $dl3 = "DownloadData" nocase
+        $run1 = "Invoke-Expression" nocase
+        $run2 = "IEX(" nocase
+        $run3 = "Start-Process" nocase
+        $run4 = "powershell" nocase
+    condition:
+        $net and (any of ($dl*)) and (any of ($run*))
+}
+
+rule Suspicious_AMSI_Bypass : amsi
+{
+    meta:
+        description = "Script gets AMSI protection out of the way before doing anything else"
+        severity = "critical"
+        family = "Defense Evasion"
+        id = "core.amsi.bypass"
+    strings:
+        $a1 = "AmsiUtils" nocase
+        $a2 = "amsiInitFailed" nocase
+        $a3 = "amsiContext" nocase
+        $a4 = "amsiSession" nocase
+        $b1 = "amsi.dll" nocase
+        $b2 = "AmsiScanBuffer" nocase
+        $c1 = "VirtualProtect" nocase
+        $c2 = "WriteProcessMemory" nocase
+    condition:
+        any of ($a*) or ($b1 and any of ($c*))
+}
+
+rule Suspicious_Process_Injection_APIs : injection
+{
+    meta:
+        description = "Binary imports the full remote-process injection chain"
+        severity = "high"
+        family = "Process Injection"
+        id = "core.inject.chain"
+    strings:
+        $a = "VirtualAllocEx" nocase
+        $b = "WriteProcessMemory" nocase
+        $c = "CreateRemoteThread" nocase
+        $d = "NtMapViewOfSection" nocase
+        $e = "QueueUserAPC" nocase
+    condition:
+        ($a and $b and $c) or ($a and $b and $e) or ($d and $b)
+}
+
+rule Suspicious_Keylogging_Signature : keylog
+{
+    meta:
+        description = "Keyboard state is read together with the foreground window"
+        severity = "high"
+        family = "Surveillance"
+        id = "core.keylog"
+    strings:
+        $a = "GetAsyncKeyState" nocase
+        $b = "GetKeyState" nocase
+        $c = "GetForegroundWindow" nocase
+        $d = "GetWindowText" nocase
+    condition:
+        $a and (any of ($c*))
+}
+
+rule Suspicious_Credential_Dumping : credential
+{
+    meta:
+        description = "References credential-dumping tooling or techniques"
+        severity = "critical"
+        family = "Credential Access"
+        id = "core.credential.dump"
+    strings:
+        $a1 = "sekurlsa" nocase
+        $a2 = "lsadump" nocase
+        $a3 = "mimikatz" nocase
+        $a4 = "procdump" nocase
+        $b1 = "lsass" nocase
+        $b2 = "samquery" nocase
+        $b3 = "ntds.dit" nocase
+        $c = "CryptUnprotectData" nocase
+    condition:
+        any of ($a*) or ($b2 and $b3)
+}
+
+rule Suspicious_Disable_Defender : defense_evasion
+{
+    meta:
+        description = "Command line disables or excludes paths from Windows Defender"
+        severity = "high"
+        family = "Defense Evasion"
+        id = "core.defender.off"
+    strings:
+        $a1 = "Set-MpPreference" nocase
+        $a2 = "Add-MpPreference" nocase
+        $b1 = "-DisableRealtimeMonitoring" nocase
+        $b2 = "-ExclusionPath" nocase
+        $b3 = "-ExclusionExtension" nocase
+        $b4 = "-DisableBehaviorMonitoring" nocase
+        $c = "Set-MpPreference -DisableIOAVProtection" nocase
+    condition:
+        (any of ($a*)) and (any of ($b*)) or $c
+}
+
+rule Suspicious_FromBase64_Payload : encoding
+{
+    meta:
+        description = "Base64 payload decoded and executed in one go"
+        severity = "medium"
+        family = "Encoding"
+        id = "core.base64.exec"
+    strings:
+        $a = "FromBase64String" nocase
+        $b1 = "IEX(" nocase
+        $b2 = "Invoke-Expression" nocase
+        $b3 = "EncodedCommand" nocase
+        $b4 = "Reflection.Assembly]::Load" nocase
+    condition:
+        $a and (any of ($b*))
+}

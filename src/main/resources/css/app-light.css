@@ -1,0 +1,188 @@
+/* RATShield light theme - loaded after app.css and overrides it */
+
+.root {
+    -fx-background-color: #f4f6f9;
+    -fx-text-fill: #1d2733;
+}
+
+.app-root {
+    -fx-background-color: #f4f6f9;
+}
+
+.sidebar {
+    -fx-background-color: #ffffff;
+    -fx-border-color: transparent #e2e7ee transparent transparent;
+}
+
+.brand {
+    -fx-text-fill: #12836a;
+}
+
+.brand-sub, .stat-caption, .muted {
+    -fx-text-fill: #5d6b7a;
+}
+
+.nav-button {
+    -fx-text-fill: #4a5866;
+}
+
+.nav-button:hover {
+    -fx-background-color: #eef2f7;
+    -fx-text-fill: #1d2733;
+}
+
+.nav-button:selected, .nav-button.active {
+    -fx-background-color: #dff5ec;
+    -fx-text-fill: #12836a;
+}
+
+.content {
+    -fx-background-color: #f4f6f9;
+}
+
+.heading, .subheading {
+    -fx-text-fill: #1d2733;
+}
+
+.card, .stat-card {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #e2e7ee;
+}
+
+.stat-value {
+    -fx-text-fill: #12836a;
+}
+
+.stat-value.warn {
+    -fx-text-fill: #b36a00;
+}
+
+.stat-value.bad {
+    -fx-text-fill: #cf3040;
+}
+
+.button {
+    -fx-background-color: #e8edf3;
+    -fx-text-fill: #1d2733;
+}
+
+.button:hover {
+    -fx-background-color: #dde4ec;
+}
+
+.button.primary {
+    -fx-background-color: #12836a;
+    -fx-text-fill: #ffffff;
+}
+
+.button.primary:hover {
+    -fx-background-color: #0f7159;
+}
+
+.button.danger {
+    -fx-background-color: #c73a4a;
+    -fx-text-fill: #ffffff;
+}
+
+.toggle-switch, .check-box, .radio-button {
+    -fx-text-fill: #1d2733;
+}
+
+.combo-box {
+    -fx-background-color: #ffffff;
+    -fx-text-fill: #1d2733;
+}
+
+.combo-box .list-cell {
+    -fx-background-color: #ffffff;
+    -fx-text-fill: #1d2733;
+}
+
+.text-field, .spinner {
+    -fx-background-color: #ffffff;
+    -fx-text-fill: #1d2733;
+    -fx-prompt-text-fill: #8b97a4;
+    -fx-border-color: #d4dbe4;
+}
+
+.table-view {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #e2e7ee;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: #f7f9fc;
+}
+
+.table-view .column-header, .table-view .filler {
+    -fx-background-color: #f7f9fc;
+    -fx-border-color: transparent transparent #e2e7ee transparent;
+}
+
+.table-view .column-header .label {
+    -fx-text-fill: #5d6b7a;
+}
+
+.table-view .table-cell {
+    -fx-text-fill: #1d2733;
+}
+
+.table-view .table-row-cell:filled {
+    -fx-background-color: #ffffff;
+}
+
+.table-view .table-row-cell:filled:odd {
+    -fx-background-color: #f7f9fc;
+}
+
+.table-view .table-row-cell:filled:selected {
+    -fx-background-color: #dff5ec;
+}
+
+.progress-bar .track {
+    -fx-background-color: #e8edf3;
+}
+
+.progress-bar .bar {
+    -fx-background-color: #12836a;
+}
+
+.badge-ok {
+    -fx-background-color: #dff5ec;
+    -fx-text-fill: #0f7159;
+}
+
+.badge-warn {
+    -fx-background-color: #fff0d9;
+    -fx-text-fill: #96610a;
+}
+
+.badge-bad {
+    -fx-background-color: #fde4e7;
+    -fx-text-fill: #b52135;
+}
+
+.badge-idle {
+    -fx-background-color: #e8edf3;
+    -fx-text-fill: #5d6b7a;
+}
+
+.list-view {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #e2e7ee;
+}
+
+.list-view .list-cell {
+    -fx-background-color: #ffffff;
+    -fx-text-fill: #1d2733;
+}
+
+.hyperlink {
+    -fx-text-fill: #12836a;
+}
+
+.text-area {
+    -fx-background-color: #ffffff;
+    -fx-text-fill: #1d2733;
+    -fx-border-color: #d4dbe4;
+}

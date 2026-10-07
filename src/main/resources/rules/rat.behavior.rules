@@ -1,0 +1,152 @@
+// RatShield RAT/backdoor rules: family markers, reverse-shell plumbing and abuse of
+// legitimate collaboration channels for command-and-control.
+
+rule RAT_Family_Marker : rat
+{
+    meta:
+        description = "Contains a known remote-access-tool family identifier"
+        severity = "critical"
+        family = "Remote Access Trojan"
+        id = "rat.family.marker"
+    strings:
+        $a = "njRAT" nocase
+        $b = "Bladabindi" nocase
+        $c = "DarkComet" nocase
+        $d = "QuasarRAT" nocase
+        $e = "AsyncRAT" nocase
+        $f = "LuminosityLink" nocase
+        $g = "Orcus RAT" nocase
+        $h = "Imminent Monitor" nocase
+        $i = "SpyNet RAT" nocase
+        $j = "NetWire" nocase
+        $k = "Dark Comet" nocase
+        $l = "RevengeRAT" nocase
+        $m = "Cobalt Strike" nocase
+        $n = "beacon.dll" nocase
+    condition:
+        any of them
+}
+
+rule RAT_Reverse_Shell_Pipeline : shell
+{
+    meta:
+        description = "TCP socket wired directly to a command shell"
+        severity = "high"
+        family = "Reverse Shell"
+        id = "rat.reverse.shell"
+    strings:
+        $s1 = "TcpClient" nocase
+        $s2 = "System.Net.Sockets" nocase
+        $s3 = "NetworkStream" nocase
+        $s4 = "GetStream" nocase
+        $c1 = "cmd.exe" nocase
+        $c2 = "powershell" nocase
+        $c3 = "/bin/sh" nocase
+        $c4 = "Process.Start" nocase
+    condition:
+        (any of ($s*)) and (any of ($c*))
+}
+
+rule RAT_Screenshot_Capture : surveillance
+{
+    meta:
+        description = "Captures the screen contents for exfiltration"
+        severity = "medium"
+        family = "Surveillance"
+        id = "rat.screenshot"
+    strings:
+        $a = "CopyFromScreen" nocase
+        $b = "BitBlt" nocase
+        $c1 = "System.Drawing" nocase
+        $c2 = "Save" nocase
+    condition:
+        ($a or $b) and any of ($c*)
+}
+
+rule RAT_Discord_Webhook_Exfil : c2
+{
+    meta:
+        description = "Talks to a Discord webhook, a common free command-and-control channel"
+        severity = "high"
+        family = "Command And Control"
+        id = "rat.c2.discord"
+    strings:
+        $a = "discord.com/api/webhooks" nocase
+        $b = "discordapp.com/api/webhooks" nocase
+    condition:
+        any of them
+}
+
+rule RAT_Telegram_Bot_C2 : c2
+{
+    meta:
+        description = "Hard-coded Telegram bot token used as a command-and-control channel"
+        severity = "high"
+        family = "Command And Control"
+        id = "rat.c2.telegram"
+    strings:
+        $token = /bot[0-9]{8,12}:[A-Za-z0-9_-]{30,45}/
+    condition:
+        $token
+}
+
+rule RAT_Scheduled_Task_Persistence : persistence
+{
+    meta:
+        description = "Scheduled task created with an on-logon trigger"
+        severity = "medium"
+        family = "Persistence"
+        id = "rat.persistence.schtasks"
+    strings:
+        $a1 = "schtasks" nocase
+        $a2 = "Register-ScheduledTask" nocase
+        $b1 = "/create" nocase
+        $b2 = "-Trigger" nocase
+        $c1 = "/sc onlogon" nocase
+        $c2 = "/sc daily" nocase
+        $c3 = "-AtLogOn" nocase
+        $c4 = "/ru" nocase
+        $c5 = "-User" nocase
+    condition:
+        (any of ($a*)) and (any of ($b*)) and (any of ($c*))
+}
+
+rule RAT_Run_Key_Autorun : persistence
+{
+    meta:
+        description = "Autorun registry value written with a script host or encoded payload"
+        severity = "high"
+        family = "Persistence"
+        id = "rat.persistence.runkey"
+    strings:
+        $key = "CurrentVersion\\Run" nocase
+        $host1 = "wscript" nocase
+        $host2 = "cscript" nocase
+        $host3 = "mshta" nocase
+        $host4 = "powershell" nocase
+        $host5 = "regsvr32" nocase
+        $host6 = "rundll32" nocase
+        $write1 = "reg add" nocase
+        $write2 = "RegSetValue" nocase
+        $write3 = "SetValue" nocase
+    condition:
+        $key and (any of ($host*)) and (any of ($write*))
+}
+
+rule RAT_Clipboard_Credential_Stealer : credential
+{
+    meta:
+        description = "Reads clipboard contents together with browser credential stores"
+        severity = "high"
+        family = "Credential Theft"
+        id = "rat.stealer.clipboard"
+    strings:
+        $a = "Get-Clipboard" nocase
+        $b = "Clipboard" nocase
+        $c1 = "Login Data" nocase
+        $c2 = "logins.json" nocase
+        $c3 = "Local State" nocase
+        $c4 = "cookies.sqlite" nocase
+    condition:
+        (any of ($a*)) and (any of ($c*))
+}

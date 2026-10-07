@@ -1,0 +1,120 @@
+// RatShield packaging and dropper rules: scripts that fetch and start a second stage,
+// archive path traversal, and the industry-standard EICAR test file.
+
+rule Test_EICAR : test
+{
+    meta:
+        description = "EICAR standard anti-malware test file"
+        severity = "critical"
+        family = "Test"
+        id = "test.eicar"
+        sha256 = "275a021bbfb6489e54d471899f7db9d1663fc695ec2fe2a2c4538aabf651fd0f"
+    strings:
+        $eicar = "X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*"
+    condition:
+        $eicar
+}
+
+rule Dropper_VBS_Download_Exec : dropper
+{
+    meta:
+        description = "VBScript downloads a payload and hands it to a shell"
+        severity = "high"
+        family = "Dropper"
+        id = "pack.dropper.vbs"
+    strings:
+        $a1 = "CreateObject(\"WScript.Shell\")" nocase
+        $a2 = "CreateObject(\"MSXML2.XMLHTTP\")" nocase
+        $a3 = "CreateObject(\"MSXML2.ServerXMLHTTP\")" nocase
+        $b1 = "DownloadFile" nocase
+        $b2 = ".Open \"GET\"" nocase
+        $c1 = ".Run" nocase
+        $c2 = "sh.Run" nocase
+    condition:
+        (any of ($a*)) and (any of ($b*)) and (any of ($c*))
+}
+
+rule Dropper_JS_ADODB_Stream : dropper
+{
+    meta:
+        description = "Script writes a downloaded binary to disk with ADODB.Stream"
+        severity = "high"
+        family = "Dropper"
+        id = "pack.dropper.js"
+    strings:
+        $a = "ADODB.Stream" nocase
+        $b = "XMLHTTP" nocase
+        $c = "SaveToFile" nocase
+        $d = "fromcharcode" nocase
+    condition:
+        ($a and $b and $c) or ($b and $c and $d)
+}
+
+rule Dropper_PowerShell_Policy_Bypass : dropper
+{
+    meta:
+        description = "PowerShell script run with execution policy bypass plus a download step"
+        severity = "medium"
+        family = "Dropper"
+        id = "pack.dropper.ps1"
+    strings:
+        $a = "-ExecutionPolicy" nocase
+        $b1 = "Bypass" nocase
+        $b2 = "Unrestricted" nocase
+        $c1 = "Start-BitsTransfer" nocase
+        $c2 = "Invoke-WebRequest" nocase
+        $c3 = "Net.WebClient" nocase
+        $c4 = "certutil -urlcache" nocase
+    condition:
+        $a and (any of ($b*)) and (any of ($c*))
+}
+
+rule Archive_Zip_Slip_Path : archive
+{
+    meta:
+        description = "Archive entry name escapes its target directory"
+        severity = "medium"
+        family = "Archive"
+        id = "pack.archive.zipslip"
+    strings:
+        $slip = /\.\.[\\\/]/
+        $abs = /(^|[^A-Za-z])[A-Za-z]:[\\\/]Users\\/
+    condition:
+        $slip or $abs
+}
+
+rule Dropper_HTML_ActiveX_Loader : dropper
+{
+    meta:
+        description = "HTML or HTA page builds an ActiveX loader"
+        severity = "medium"
+        family = "Dropper"
+        id = "pack.dropper.hta"
+    strings:
+        $a = "ActiveXObject" nocase
+        $b1 = "XMLHTTP" nocase
+        $b2 = "ADODB" nocase
+        $b3 = "WScript.Shell" nocase
+        $c = "<hta:" nocase
+    condition:
+        $a and any of ($b*) and $c
+}
+
+rule Dropper_Executable_Drop_To_Startup : dropper
+{
+    meta:
+        description = "Script copies an executable into the user startup folder"
+        severity = "high"
+        family = "Dropper"
+        id = "pack.dropper.startup"
+    strings:
+        $a1 = "\\Start Menu\\Programs\\Startup" nocase
+        $a2 = "shell:startup" nocase
+        $b1 = "copy" nocase
+        $b2 = "Copy-Item" nocase
+        $b3 = "Move-Item" nocase
+        $b4 = "SaveToFile" nocase
+        $c = ".exe" nocase
+    condition:
+        (any of ($a*)) and (any of ($b*)) and $c
+}

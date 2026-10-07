@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RATShield - open anti-malware and anti-RAT protection for Windows</title>
+  <meta name="description" content="RATShield is a local-first anti-malware and anti-RAT tool for Windows: real-time protection, YARA-style detection rules, transparent risk scoring and quarantine. Built with Java 21 and JavaFX.">
+  <link rel="stylesheet" href="assets/styles.css">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath fill='%234f8cff' d='M16 2 4 7v9c0 7.5 5.1 12.6 12 14 6.9-1.4 12-6.5 12-14V7L16 2z'/%3E%3Cpath fill='%230b0f16' d='m11 16 4 4 7-8-2-2-5 6-2-2z'/%3E%3C/svg%3E">
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap bar">
+      <a class="brand" href="#top">
+        <span class="brand-mark" aria-hidden="true"></span>
+        RATShield
+      </a>
+      <nav class="nav" id="nav">
+        <a href="#features">Features</a>
+        <a href="#how">How it works</a>
+        <a href="#scoring">Scoring</a>
+        <a href="#rules">Rules</a>
+        <a href="#build">Build</a>
+        <a href="#docs">Docs</a>
+      </nav>
+      <button class="btn btn-ghost" id="theme-toggle" type="button" aria-label="Toggle colour theme">Light</button>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div>
+          <p class="eyebrow">Windows &middot; local-first &middot; open source</p>
+          <h1>Anti-malware and anti-RAT protection you can actually read</h1>
+          <p class="lede">
+            RATShield watches the folders you care about, inspects new and changed files with
+            YARA-style rules, PE parsing and behavioural signals, and explains every point of its
+            risk score before it quarantines anything. Nothing leaves your machine.
+          </p>
+          <div class="cta">
+            <a class="btn btn-primary" href="#build">Build and run it</a>
+            <a class="btn" href="#docs">Read the docs</a>
+          </div>
+          <p class="hero-note">Java 21 &middot; JavaFX &middot; Maven &middot; 63 automated tests &middot; no native agents, no telemetry</p>
+        </div>
+        <div class="panel" role="img" aria-label="Example verdict panel from RATShield">
+          <div class="panel-head">
+            <span class="dot dot-warn"></span>
+            <strong>SUSPICIOUS RISK</strong>
+            <span class="score">45 / 100</span>
+          </div>
+          <ul class="reasons">
+            <li><span>+20</span> Deceptive double extension</li>
+            <li><span>+12</span> Created or modified in the last minute</li>
+            <li><span>+10</span> Located in a temporary directory</li>
+            <li><span>+3</span> 1 suspicious embedded string indicator</li>
+          </ul>
+          <div class="panel-foot">Recommended action: <strong>WARN</strong> &middot; confidence: MEDIUM</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="features" class="section">
+      <div class="wrap">
+        <h2>What it does</h2>
+        <div class="grid">
+          <article class="card">
+            <h3>Real-time protection</h3>
+            <p>Folder monitors react to creates, changes and deletions. Files that look dangerous are
+               quarantined before you can double-click them, and deletions inside watched folders are logged.</p>
+          </article>
+          <article class="card">
+            <h3>Scans that finish</h3>
+            <p>Quick, full and custom scans run on a background worker with live progress, a cancellable
+               queue, per-file findings and a written summary of what was scanned, found and quarantined.</p>
+          </article>
+          <article class="card">
+            <h3>Transparent risk scoring</h3>
+            <p>Every verdict is a list of reasons with points: signed or not, where it lives, what it
+               contains, what it tried to do. Duplicates are merged, capped scores are explained.</p>
+          </article>
+          <article class="card">
+            <h3>Rules you can write</h3>
+            <p>A YARA-subset parser loads plain text rule files from disk: strings, hex patterns,
+               <code>and</code>/<code>or</code>/<code>not</code>, <code>any of ($x*)</code>,
+               <code>filesize</code>, meta severity and expected SHA-256.</p>
+          </article>
+          <article class="card">
+            <h3>Quarantine with receipts</h3>
+            <p>Quarantined files are moved, hashed and recorded with the rule or reason that caught them.
+               Restore with one click (overwrite is asked for explicitly), or delete permanently.</p>
+          </article>
+          <article class="card">
+            <h3>System awareness</h3>
+            <p>Live network connections, persistence entries (Run keys, startup folder, services, scheduled
+               tasks), firewall state, process list and signature checks - collected through plain Windows
+               commands, no driver required.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="how" class="section section-alt">
+      <div class="wrap">
+        <h2>How a file gets a verdict</h2>
+        <ol class="pipeline">
+          <li><strong>Classify</strong><span>Extension, magic bytes and PE header decide the type and whether deep inspection is worth it.</span></li>
+          <li><strong>Collect</strong><span>Hashes, embedded strings, entropy, imports, sections, timestamps, code signature, location and age.</span></li>
+          <li><strong>Match</strong><span>Loaded rules run against content (bounded to the first 8&nbsp;MB) and against the expected SHA-256.</span></li>
+          <li><strong>Score</strong><span>Each signal contributes points; duplicates count once, weak combinations earn a capped synergy bonus.</span></li>
+          <li><strong>Act</strong><span>Allow, warn, confirm or quarantine - then the reason list is published to the activity log on screen and on disk.</span></li>
+        </ol>
+        <div class="grid grid-2">
+          <article class="card">
+            <h3>Bounded by design</h3>
+            <p>Archives are limited to 2&nbsp;000 entries, a 200:1 compression ratio and 3 levels of nesting.
+               Files above the configured size limit are skipped by scans instead of hanging them. Rule
+               evaluation stops at 8&nbsp;MB of content.</p>
+          </article>
+          <article class="card">
+            <h3>Graceful on any machine</h3>
+            <p>Windows diagnostics degrade to a clear message when a command is refused: no admin rights
+               means firewall changes report "elevation required" instead of failing silently.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="scoring" class="section">
+      <div class="wrap">
+        <h2>Scoring and thresholds</h2>
+        <p class="section-lede">Scores are clamped to 0-100. The default action thresholds are configurable in Settings.</p>
+        <table class="table">
+          <thead>
+            <tr><th>Band</th><th>Score</th><th>Default action</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><span class="badge badge-ok">SAFE</span></td><td>0 - 19</td><td>Allow</td></tr>
+            <tr><td><span class="badge badge-ok">LOW</span></td><td>20 - 39</td><td>Allow</td></tr>
+            <tr><td><span class="badge badge-warn">SUSPICIOUS</span></td><td>40 - 59</td><td>Warn</td></tr>
+            <tr><td><span class="badge badge-bad">HIGH</span></td><td>60 - 79</td><td>Quarantine</td></tr>
+            <tr><td><span class="badge badge-bad">MALWARE</span></td><td>80 - 100</td><td>Quarantine and confirm</td></tr>
+          </tbody>
+        </table>
+        <ul class="bullets">
+          <li>A valid code signature caps an otherwise unconfirmed score at 55.</li>
+          <li>A rule hit, a reputation hit or an archive bomb marks the verdict <strong>CONFIRMED</strong> and quarantines regardless of score.</li>
+          <li>Confidence also counts categories: file structure, location and timing, observed behaviour, signatures.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="rules" class="section section-alt">
+      <div class="wrap">
+        <h2>Rules are plain text</h2>
+        <p class="section-lede">Drop a <code>.rules</code> file into the rules folder and press Reload on the Rules page. Every rule needs a meta severity.</p>
+        <pre class="code"><code>rule Suspicious_PowerShell_Encoded_Command : powershell
+{
+    meta:
+        description = "PowerShell invoked with an encoded or hidden command line"
+        severity = "high"
+        id = "core.ps.encoded"
+    strings:
+        $enc1 = "-EncodedCommand" nocase
+        $enc2 = "-enc " nocase
+        $host1 = "powershell" nocase
+        $hide1 = "-w hidden" nocase
+    condition:
+        (any of ($enc*)) and (any of ($host*)) and (any of ($hide*))
+}</code></pre>
+        <p class="section-lede">Supported modifiers: <code>nocase</code>, <code>wide</code>, <code>ascii</code>,
+           <code>fullword</code>, <code>xor</code>, <code>base64</code>, <code>base64wide</code>, plus hex
+           patterns with <code>??</code> wildcards. Parse errors are listed on the Rules page instead of
+           being silently dropped.</p>
+      </div>
+    </section>
+
+    <section id="build" class="section">
+      <div class="wrap">
+        <h2>Build it yourself</h2>
+        <p class="section-lede">Requirements: JDK 21 (Temurin or newer) and Maven 3.9+. On Windows, the
+           packaged app is produced with the JDK's own <code>jpackage</code>.</p>
+        <pre class="code"><code># run the test suite
+mvn -B test
+
+# build the shaded jar and run it
+mvn -B clean package
+java -jar target/RATShield.jar
+
+# build the Windows app image: target/dist/RATShield/RATShield.exe
+mvn -B package -Pdist</code></pre>
+        <div class="grid grid-3">
+          <article class="card">
+            <h3>Runs anywhere Java does</h3>
+            <p>The jar starts on any platform with a display. Windows-specific views show their real
+               diagnostic output instead of empty tables when a command is unavailable.</p>
+          </article>
+          <article class="card">
+            <h3>No services, no drivers</h3>
+            <p>Everything is user-space: folder watchers, polling monitors and command-line queries such
+               as <code>netstat</code>, <code>reg</code>, <code>net session</code> and <code>netsh</code>.</p>
+          </article>
+          <article class="card">
+            <h3>Your data stays local</h3>
+            <p>Config, log, quarantine, reputation cache and learned hashes live in one folder under
+               <code>%LOCALAPPDATA%\RATShield</code>. No account, no upload.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="docs" class="section section-alt">
+      <div class="wrap">
+        <h2>Documentation</h2>
+        <div class="grid grid-3">
+          <a class="card card-link" href="../docs/getting-started.md"><h3>Getting started</h3><p>Requirements, first build, first run and the packaged executable.</p></a>
+          <a class="card card-link" href="../docs/user-guide.md"><h3>User guide</h3><p>Every page of the interface, what it reads and what it changes.</p></a>
+          <a class="card card-link" href="../docs/architecture.md"><h3>Architecture</h3><p>Packages, data flow, threading model and the platform layer.</p></a>
+          <a class="card card-link" href="../docs/detection-engine.md"><h3>Detection engine</h3><p>Analysis pipeline, risk factors, rule format and the action policy.</p></a>
+          <a class="card card-link" href="../docs/testing.md"><h3>Testing</h3><p>How the 63 tests are organised and how to run them.</p></a>
+          <a class="card card-link" href="../docs/README.md"><h3>All docs</h3><p>Index of every document in the repository.</p></a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer-grid">
+      <div>
+        <p class="brand footer-brand">RATShield</p>
+        <p>Open anti-malware and anti-RAT protection for Windows. Source and issue tracker live in the
+           project repository.</p>
+      </div>
+      <div>
+        <p class="footer-title">Project</p>
+        <ul>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#build">Building</a></li>
+          <li><a href="../docs/README.md">Documentation</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="footer-title">Licence</p>
+        <p>GNU General Public License v3.0</p>
+        <p class="muted">EICAR is used only as a harmless detection test string.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/site.js"></script>
+</body>
+</html>

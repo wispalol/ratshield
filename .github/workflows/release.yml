@@ -1,0 +1,51 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Build installer
+        shell: pwsh
+        run: mvn -B clean package -Pdist
+
+      - name: Stage portable archive and digests
+        shell: pwsh
+        run: |
+          $version = $env:GITHUB_REF_NAME.TrimStart('v')
+          $stage = "target\installer"
+          New-Item -ItemType Directory -Force -Path $stage | Out-Null
+          Compress-Archive -Path "target\dist\RATShield" -DestinationPath "$stage\ratshield-portable-$version.zip" -Force
+          $setupHash = (Get-FileHash -Algorithm SHA256 "$stage\ratshield-setup.exe").Hash.ToLower()
+          $zipHash = (Get-FileHash -Algorithm SHA256 "$stage\ratshield-portable-$version.zip").Hash.ToLower()
+          @"
+          RATShield $version
+
+          sha256: ratshield-setup.exe $setupHash
+          sha256: ratshield-portable-$version.zip $zipHash
+          "@ | Set-Content -Path "$stage\release-body.md" -Encoding ascii
+          Write-Host "Setup exe: $setupHash"
+          Write-Host "Portable zip: $zipHash"
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          body_path: target/installer/release-body.md
+          files: |
+            target/installer/ratshield-setup.exe
+            target/installer/ratshield-portable-*.zip
