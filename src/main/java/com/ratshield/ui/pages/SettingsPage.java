@@ -128,6 +128,12 @@ public final class SettingsPage implements Page {
     @Override
     public void onShown() {
         reloadLists();
+        if (service.config().isAutoUpdateCheck() && !installButton.isDisable()) {
+            // If no update known yet, do a background check
+            checkForUpdates();
+        } else if (service.config().isAutoUpdateCheck()) {
+            checkForUpdates();
+        }
     }
 
     private void reloadLists() {
