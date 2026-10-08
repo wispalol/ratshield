@@ -27,6 +27,9 @@ import javafx.stage.Stage;
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 /**
@@ -189,6 +192,20 @@ public final class RatShieldApp extends Application {
                 "ratshield-auto-update");
         thread.setDaemon(true);
         thread.start();
+        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(r -> {
+            Thread t = new Thread(r, "ratshield-update-scheduler");
+            t.setDaemon(true);
+            return t;
+        });
+        scheduler.scheduleWithFixedDelay(() -> {
+            try {
+                if (service.config().isAutoUpdateCheck()) {
+                    service.updates().checkBackground();
+                }
+            } catch (RuntimeException ignored) {
+                // best effort
+            }
+        }, 6, 6, TimeUnit.HOURS);
     }
 
     private static Path resolveDataDir() {

@@ -33,7 +33,7 @@ import java.util.logging.Logger;
  */
 public final class FileMonitor {
     private static final Logger LOG = Logger.getLogger(FileMonitor.class.getName());
-    private static final long DEBOUNCE_MS = 1500;
+    private static final long DEBOUNCE_MS = 250;
     private static final int MAX_DEPTH = 12;
 
     public enum Kind { CREATED, MODIFIED, DELETED }

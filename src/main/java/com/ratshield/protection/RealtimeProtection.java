@@ -40,11 +40,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * to the security log with the exact reasons behind it.</p>
  */
 public final class RealtimeProtection implements AutoCloseable {
-    private static final Duration REHANDLE_WINDOW = Duration.ofSeconds(20);
+    private static final Duration REHANDLE_WINDOW = Duration.ofSeconds(10);
     private static final Set<String> INTERESTING_EXTENSIONS = Set.of(
-            "exe", "dll", "scr", "com", "pif", "cpl", "msi", "msp", "sys", "ocx", "ax", "drv",
+            "exe", "dll", "scr", "com", "pif", "cpl", "msi", "msp", "msix", "msixbundle", "sys", "ocx", "ax", "drv",
             "bat", "cmd", "ps1", "psm1", "psd1", "vbs", "vbe", "js", "jse", "wsf", "wsh", "hta",
-            "jar", "jnlp", "lnk", "reg", "chm", "apk", "bin", "dat", "tmp", "url", "application");
+            "jar", "jnlp", "lnk", "reg", "chm", "apk", "bin", "dat", "url", "application", "appx", "appxbundle");
 
     private final DetectionEngine detectionEngine;
     private final ActionPolicy policy;
@@ -198,7 +198,7 @@ public final class RealtimeProtection implements AutoCloseable {
         if (Files.isDirectory(normalized) || config.isExcluded(normalized)) {
             return;
         }
-        if (kind != FileMonitor.Kind.DELETED && !isInteresting(normalized)) {
+        if (kind != FileMonitor.Kind.DELETED && kind != FileMonitor.Kind.CREATED && !isInteresting(normalized)) {
             return;
         }
         String handleKey = normalized.toString().toLowerCase(Locale.ROOT);

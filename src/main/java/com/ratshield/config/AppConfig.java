@@ -73,12 +73,18 @@ public final class AppConfig {
         String userHome = System.getProperty("user.home", "");
         if (!userHome.isBlank()) {
             paths.add(Path.of(userHome, "Downloads").toString());
+            paths.add(Path.of(userHome, "Desktop").toString());
+            paths.add(Path.of(userHome, "AppData", "Local", "Temp").toString());
             paths.add(Path.of(userHome, "AppData", "Roaming", "Microsoft", "Windows", "Start Menu",
                     "Programs", "Startup").toString());
         }
         String temp = System.getenv("TEMP");
         if (temp != null && !temp.isBlank()) {
             paths.add(temp);
+        }
+        String windir = System.getenv("WINDIR");
+        if (windir != null && !windir.isBlank()) {
+            paths.add(Path.of(windir, "Temp").toString());
         }
         return paths;
     }

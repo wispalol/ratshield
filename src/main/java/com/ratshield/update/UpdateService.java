@@ -164,9 +164,10 @@ public final class UpdateService {
             if (name.toLowerCase(Locale.ROOT).endsWith(".exe")) {
                 bus.publish(SecurityEvent.of(SecurityEvent.Type.UPDATE_STARTED,
                         SecurityEvent.Severity.INFO, "Installing update",
-                        "Launched " + name));
-                new ProcessBuilder(downloaded.toAbsolutePath().toString()).start();
+                        "Launching installer - the app will exit once installation starts"));
+                new ProcessBuilder(downloaded.toAbsolutePath().toString(), "/SILENT", "/SP-", "/NOCANCEL", "/NORESTART").start();
                 log.info("update", "launched installer " + name);
+                System.exit(0);
                 return;
             }
             if (name.toLowerCase(Locale.ROOT).endsWith(".zip")) {
