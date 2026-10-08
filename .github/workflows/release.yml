@@ -20,6 +20,13 @@ jobs:
           distribution: temurin
           java-version: '21'
 
+      - name: Set up WiX Toolset
+        run: |
+          dotnet tool install --global wix
+          wix --version
+          echo "WIX=C:\Program Files (x86)\WiX Toolset v3.14" | Out-File -FilePath  -Append
+        shell: pwsh
+
       - name: Build installer
         shell: pwsh
         run: mvn -B clean package -Pdist
