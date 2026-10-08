@@ -21,6 +21,22 @@ const faqs = [
     q: 'Can I restore something that was quarantined?',
     a: 'Yes. Quarantined files are kept in an isolated folder and can be restored or permanently deleted from the Quarantine tab.',
   },
+  {
+    q: 'What if it flags a program I trust?',
+    a: 'Some legitimate tools, like remote desktop apps, behave similarly to RATs. You can mark any item as trusted and RatShield will stop alerting about it.',
+  },
+  {
+    q: 'Does RatShield send my data anywhere?',
+    a: 'No. All scanning happens locally on your PC, no account is needed, and quarantined files never leave your computer.',
+  },
+  {
+    q: 'Why does it need administrator rights?',
+    a: 'Admin rights let RatShield inspect every process, read system startup locations, and stop malware that runs with elevated permissions.',
+  },
+  {
+    q: 'How do I uninstall it?',
+    a: 'Open Windows Settings, go to Apps, find RatShield and choose Uninstall. Any quarantined files are removed along with it.',
+  },
 ]
 
 export function Faq() {
@@ -30,6 +46,9 @@ export function Faq() {
         <div>
           <p className="font-mono text-sm text-primary">FAQ</p>
           <h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">Questions</h2>
+          <p className="mt-4 text-pretty leading-relaxed text-muted-foreground">
+            Everything you need to know before installing RatShield.
+          </p>
         </div>
         <div className="divide-y divide-border border-y border-border">
           {faqs.map((item) => (

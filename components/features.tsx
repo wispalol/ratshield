@@ -1,4 +1,5 @@
 import { Activity, Camera, Globe, Lock, Power, Radar } from 'lucide-react'
+import { SectionHeading } from '@/components/section-heading'
 
 const features = [
   {
@@ -43,17 +44,11 @@ export function Features() {
   return (
     <section id="features" className="scroll-mt-20 border-t border-border py-24">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <div className="max-w-2xl">
-          <p className="font-mono text-sm text-primary">What it does</p>
-          <h2 className="mt-3 text-balance text-3xl font-semibold tracking-tight sm:text-4xl">
-            Everything a RAT needs to survive, RatShield watches.
-          </h2>
-          <p className="mt-4 text-pretty leading-relaxed text-muted-foreground">
-            A Remote Access Trojan lets an attacker secretly control your computer &mdash; reading
-            files, logging keystrokes, and watching through your webcam. RatShield covers every
-            stage of how they get in and stay in.
-          </p>
-        </div>
+        <SectionHeading
+          eyebrow="What it does"
+          title="Everything a RAT needs to survive, RatShield watches."
+          description="RatShield covers every stage of an infection: how a RAT starts, how it hides, how it phones home, and how it spies on you."
+        />
         <ul className="mt-14 grid gap-px overflow-hidden rounded-2xl border border-border bg-border sm:grid-cols-2 lg:grid-cols-3">
           {features.map((feature) => (
             <li key={feature.title} className="bg-background p-8">

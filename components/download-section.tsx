@@ -1,7 +1,7 @@
 import { Check, Download, ShieldCheck } from 'lucide-react'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import { download } from '@/lib/site'
+import { download, releaseNotes } from '@/lib/site'
 
 const requirements = [
   'Windows 10 or Windows 11 (64-bit)',
@@ -31,7 +31,11 @@ export function DownloadSection() {
               Get protected in under a minute. The installer is a single executable &mdash; no
               account or sign-up required.
             </p>
-            <dl className="mt-8 grid grid-cols-3 gap-4 rounded-xl border border-border bg-background p-4 font-mono text-xs">
+            <dl className="mt-8 grid grid-cols-2 gap-4 rounded-xl border border-border bg-background p-4 font-mono text-xs sm:grid-cols-4">
+              <div>
+                <dt className="text-muted-foreground">Released</dt>
+                <dd className="mt-1 text-foreground">{download.released}</dd>
+              </div>
               <div>
                 <dt className="text-muted-foreground">Version</dt>
                 <dd className="mt-1 text-foreground">{download.version}</dd>
@@ -79,6 +83,17 @@ export function DownloadSection() {
                   </li>
                 ))}
               </ol>
+            </div>
+            <div>
+              <h3 className="font-medium">{`What's new in ${download.version}`}</h3>
+              <ul className="mt-4 grid gap-2 text-sm text-muted-foreground">
+                {releaseNotes.map((note) => (
+                  <li key={note} className="flex items-start gap-3">
+                    <span className="mt-2 size-1.5 shrink-0 rounded-full bg-primary" aria-hidden="true" />
+                    {note}
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
         </div>

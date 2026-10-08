@@ -4,6 +4,13 @@ import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { download } from '@/lib/site'
 
+const highlights = [
+  { label: 'Protection', value: 'Real-time' },
+  { label: 'Detection layers', value: '4' },
+  { label: 'Account needed', value: 'None' },
+  { label: 'Runs from', value: 'System tray' },
+]
+
 export function Hero() {
   return (
     <section className="relative overflow-hidden">
@@ -57,6 +64,15 @@ export function Hero() {
             className="h-auto w-full rounded-xl"
           />
         </div>
+
+        <dl className="mx-auto mt-12 grid max-w-5xl grid-cols-2 gap-px overflow-hidden rounded-2xl border border-border bg-border md:grid-cols-4">
+          {highlights.map((item) => (
+            <div key={item.label} className="bg-background px-6 py-5">
+              <dt className="text-sm text-muted-foreground">{item.label}</dt>
+              <dd className="mt-1 text-lg font-medium">{item.value}</dd>
+            </div>
+          ))}
+        </dl>
       </div>
     </section>
   )

@@ -3,8 +3,10 @@ import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
 const links = [
+  { href: '#threats', label: 'Threats' },
   { href: '#features', label: 'Features' },
   { href: '#how-it-works', label: 'How it works' },
+  { href: '#technical', label: 'Technical' },
   { href: '#download', label: 'Download' },
   { href: '#faq', label: 'FAQ' },
 ]
